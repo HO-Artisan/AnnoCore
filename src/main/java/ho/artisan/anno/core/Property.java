@@ -5,11 +5,11 @@ import java.lang.reflect.Modifier;
 /**
  * Entry 是一个包装成员内字段的操作单元。
  */
-public final class MemberEntry extends AbstractAnno {
+public final class Property extends AbstractAnno {
     private final String name;
     private final Object value;
 
-    private MemberEntry(Object instance, Field field) throws IllegalAccessException {
+    private Property(Object instance, Field field) throws IllegalAccessException {
         super(field);
         field.setAccessible(true);
         this.value = field.get(instance);
@@ -36,13 +36,13 @@ public final class MemberEntry extends AbstractAnno {
                 '}';
     }
 
-    public static MemberEntry wrap(Object instance, Field field) {
+    public static Property wrap(Object instance, Field field) {
         try {
             if (Modifier.isStatic(field.getModifiers()))
                 throw new RuntimeException(field + " is static!");
             else if (Modifier.isFinal(field.getModifiers()))
                 throw new RuntimeException(field + " is final!");
-            return new MemberEntry(instance, field);
+            return new Property(instance, field);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }

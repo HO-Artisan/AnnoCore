@@ -31,7 +31,10 @@ public final class FakeAnnotation<A> implements InvocationHandler {
     @Override
     public Object invoke(Object o, Method method, Object[] objects) {
         if (method.getName().equals("toString"))
-            return "@Fake" + aClass.getName();
+            if (valueMap.size() == 1 && valueMap.containsKey("value"))
+                return '@' + aClass.getName() + '(' + valueMap.get("value") + ')';
+            else
+                return ('@' + aClass.getName() + valueMap).replace('{', '(').replace('}', ')');
         else if (method.getName().equals("hashCode"))
             return valueMap.hashCode();
         else if (method.getName().equals("annotationType"))

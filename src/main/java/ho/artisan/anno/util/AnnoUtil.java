@@ -19,7 +19,7 @@ public final class AnnoUtil {
         resolver.after(registration);
     }
 
-    public static String mergeID(Anno anno1, Anno anno2) {
+    public static String genID(Anno anno1, Anno anno2) {
         return anno1.id() + ":" + anno2.id();
     }
 

@@ -1,9 +1,7 @@
-import ho.artisan.anno.core.Entry;
+import ho.artisan.anno.core.FakeAnnotation;
 import ho.artisan.anno.core.Registration;
 import ho.artisan.anno.core.annotation.ID;
 import ho.artisan.anno.core.annotation.Priority;
-
-import java.util.List;
 
 @ID("main")
 public class Main {
@@ -23,7 +21,8 @@ public class Main {
 
     public static void main(String[] args) {
         Registration registration = Registration.wrap(Main.class);
-        List<Entry> entries = registration.entries();
+        Nio nio_true = registration.entries().getFirst().get(Nio.class);
+        Nio nio_fake = FakeAnnotation.builder(Nio.class).value(1).build();
 
     }
 
