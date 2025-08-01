@@ -1,8 +1,10 @@
-package ho.artisan.anno.core;
+package ho.artisan.anno.core.handler;
 
+import ho.artisan.anno.core.Entry;
+import ho.artisan.anno.core.Registration;
 import org.jetbrains.annotations.NotNull;
 
-public interface RegistrationResolver extends Comparable<RegistrationResolver> {
+public interface RegistrationHandler extends Comparable<RegistrationHandler> {
     boolean match(Entry entry);
 
     void process(Entry entry, Registration registration);
@@ -17,7 +19,7 @@ public interface RegistrationResolver extends Comparable<RegistrationResolver> {
         return 0;
     }
 
-    default int compareTo(@NotNull RegistrationResolver resolver) {
+    default int compareTo(@NotNull RegistrationHandler resolver) {
         return resolver.priority() - this.priority();
     }
 }

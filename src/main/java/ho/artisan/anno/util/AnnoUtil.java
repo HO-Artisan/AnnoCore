@@ -3,14 +3,14 @@ package ho.artisan.anno.util;
 import ho.artisan.anno.core.Anno;
 import ho.artisan.anno.core.Entry;
 import ho.artisan.anno.core.Registration;
-import ho.artisan.anno.core.RegistrationResolver;
+import ho.artisan.anno.core.handler.RegistrationHandler;
 
 import java.util.Comparator;
 
 public final class AnnoUtil {
     private AnnoUtil() {}
 
-    public static void process(RegistrationResolver resolver, Registration registration) {
+    public static void process(RegistrationHandler resolver, Registration registration) {
         resolver.before(registration);
         for (Entry entry : registration.entries()) {
             if (resolver.match(entry))
