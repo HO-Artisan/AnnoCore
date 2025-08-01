@@ -6,9 +6,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * Anno 是一个用于管理注解的操作单元。
- */
 public class AbstractAnno implements Anno {
     private final Map<Class<? extends Annotation>, Annotation> map;
 

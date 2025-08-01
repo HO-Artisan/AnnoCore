@@ -1,11 +1,10 @@
 package ho.artisan.anno.core;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-/**
- * Entry 是一个包装静态字段的操作单元。
- */
 public final class Entry extends AbstractAnno {
     private final String name;
     private final Object value;
@@ -37,7 +36,7 @@ public final class Entry extends AbstractAnno {
                 '}';
     }
 
-    public static Entry wrap(Field field) {
+    public static Entry wrap(@NotNull Field field) {
         try {
             if (!Modifier.isStatic(field.getModifiers()))
                 throw new RuntimeException(field + " is not static!");

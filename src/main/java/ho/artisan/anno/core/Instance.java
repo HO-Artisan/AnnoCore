@@ -1,6 +1,7 @@
 package ho.artisan.anno.core;
 
 import ho.artisan.anno.util.AnnoUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -36,7 +37,7 @@ public final class Instance extends AbstractAnno {
                 '}';
     }
 
-    public static Instance wrap(Object instance, Class<?> clazz) {
+    public static Instance wrap(@NotNull Object instance, @NotNull Class<?> clazz) {
         return new Instance(instance, clazz);
     }
 }

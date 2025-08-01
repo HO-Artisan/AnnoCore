@@ -1,14 +1,13 @@
 package ho.artisan.anno.core;
 
 import ho.artisan.anno.util.AnnoUtil;
+import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.stream.Stream;
 
-/**
- * Registration是一个包装静态工具类的操作单元。
- */
 public final class Registration extends AbstractAnno {
     private final String name;
     private final List<Entry> entries;
@@ -16,7 +15,7 @@ public final class Registration extends AbstractAnno {
     private Registration(Class<?> clazz) {
         super(clazz);
         this.entries = Stream.of(clazz.getDeclaredFields())
-                .filter(field -> Modifier.isStatic(field.getModifiers()))
+                .filter(Registration::isEligibleField)
                 .map((Entry::wrap))
                 .sorted(AnnoUtil.comparator())
                 .toList();
@@ -31,8 +30,13 @@ public final class Registration extends AbstractAnno {
         return this.name.equals(name);
     }
 
-    public static Registration wrap(Class<?> clazz) {
+    public static Registration wrap(@NotNull Class<?> clazz) {
         return new Registration(clazz);
+    }
+
+    public static boolean isEligibleField(Field field) {
+        int modifiers = field.getModifiers();
+        return Modifier.isStatic(modifiers) && !Modifier.isFinal(modifiers);
     }
 
     @Override

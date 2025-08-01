@@ -1,10 +1,10 @@
 package ho.artisan.anno.core;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-/**
- * Entry 是一个包装成员内字段的操作单元。
- */
+
 public final class Property extends AbstractAnno {
     private final String name;
     private final Object value;
@@ -36,7 +36,7 @@ public final class Property extends AbstractAnno {
                 '}';
     }
 
-    public static Property wrap(Object instance, Field field) {
+    public static Property wrap(@NotNull Object instance, @NotNull Field field) {
         try {
             if (Modifier.isStatic(field.getModifiers()))
                 throw new RuntimeException(field + " is static!");
