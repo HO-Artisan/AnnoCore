@@ -30,9 +30,13 @@ public final class FakeAnnotation<A> implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object o, Method method, Object[] objects) {
+    public Object invoke(Object proxy, Method method, Object[] args) {
         String methodName = method.getName();
-        if (methodName.equals("toString"))
+
+        if (methodName.equals("equals")) {
+            return false;
+        }
+        else if (methodName.equals("toString"))
             return formatAnnotation();
 
         else if (methodName.equals("hashCode"))

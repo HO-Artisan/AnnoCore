@@ -28,6 +28,7 @@ public class Main {
         print(fake3);
 
         print(fake3.equals(mio));
+        print(mio.equals(fake3));
     }
 
     public static <T> void print(T object) {
