@@ -16,16 +16,24 @@ public final class Entry extends AbstractAnno {
         this.name = field.getName();
     }
 
-    public <T> T cast(Class<T> tClass) {
+    public Object raw() {
+        return value;
+    }
+
+    public <T> T as(Class<T> tClass) {
         return tClass.cast(this.value);
     }
 
-    public <T> boolean is(Class<T> tClass) {
+    public boolean is(Class<?> tClass) {
         return tClass.isInstance(this.value);
     }
 
-    public boolean is(String name) {
+    public boolean matches(String name) {
         return this.name.equals(name);
+    }
+
+    public String name() {
+        return name;
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,19 +31,62 @@ public final class FakeAnnotation<A> implements InvocationHandler {
 
     @Override
     public Object invoke(Object o, Method method, Object[] objects) {
-        if (method.getName().equals("toString"))
-            if (valueMap.size() == 1 && valueMap.containsKey("value"))
-                return '@' + aClass.getName() + '(' + valueMap.get("value") + ')';
-            else
-                return ('@' + aClass.getName() + valueMap).replace('{', '(').replace('}', ')');
-        else if (method.getName().equals("hashCode"))
+        String methodName = method.getName();
+        if (methodName.equals("toString"))
+            return formatAnnotation();
+
+        else if (methodName.equals("hashCode"))
             return valueMap.hashCode();
-        else if (method.getName().equals("annotationType"))
+
+        else if (methodName.equals("annotationType"))
             return aClass;
-        else if (valueMap.containsKey(method.getName()))
-            return valueMap.get(method.getName());
+
+        else if (valueMap.containsKey(methodName))
+            return valueMap.get(methodName);
+
         else
-            throw new RuntimeException("Method[" + method.getName() + "]'s \"key to value\" wasn't found in FakeAnnotation!");
+            throw new IllegalStateException("Method [" + methodName + "] not found in FakeAnnotation for " + aClass.getName());
+    }
+
+    private String formatAnnotation() {
+        StringBuilder sb = new StringBuilder();
+        sb.append('@').append(aClass.getName()).append('(');
+        boolean first = true;
+        boolean value = valueMap.size() == 1 && valueMap.containsKey("value");
+        for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
+            if (!first) sb.append(", ");
+            first = false;
+            if (!value)
+                sb.append(entry.getKey()).append("=");
+            sb.append(formatValue(entry.getValue()));
+        }
+        sb.append(')');
+        return sb.toString();
+    }
+
+    private String formatValue(Object value) {
+        switch (value) {
+            case null -> {
+                return "null";
+            }
+            case String s -> {
+                return "'" + value + "'";
+            }
+            case Annotation annotation -> {
+                return value.toString();
+            }
+            case Object[] array -> {
+                StringBuilder arraySb = new StringBuilder("{");
+                for (int i = 0; i < array.length; i++) {
+                    if (i > 0) arraySb.append(", ");
+                    arraySb.append(formatValue(array[i]));
+                }
+                arraySb.append("}");
+                return arraySb.toString();
+            }
+            default -> {}
+        }
+        return value.toString();
     }
 
     public static class Builder<A> {
@@ -52,6 +96,16 @@ public final class FakeAnnotation<A> implements InvocationHandler {
         private Builder(Class<A> aClass) {
             this.aClass = aClass;
             this.valueMap = new HashMap<>();
+        }
+
+        public Builder<A> copy(Invoker invoker) {
+            valueMap.put(invoker.name(), invoker.invoke());
+            return this;
+        }
+
+        public Builder<A> copyAll(Collection<Invoker> invokers) {
+            invokers.forEach(this::copy);
+            return this;
         }
 
         public <T> Builder<A> fake(String key, T value) {

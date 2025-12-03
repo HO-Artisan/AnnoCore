@@ -5,6 +5,7 @@ import ho.artisan.anno.core.annotation.Priority;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 
 public interface Anno {
@@ -15,15 +16,17 @@ public interface Anno {
     <A extends Annotation> void remove(Class<A> aClass);
     List<? extends Annotation> annotations();
 
+    default Anno wrap(AnnotatedElement element) {
+        return new AbstractAnno(element) {};
+    }
+
     @NotNull
     default String id() {
-        return contain(ID.class) ? get(ID.class).value() : "unnamed";
+        return get(ID.class).value();
     }
 
     @NotNull
     default int priority() {
-        if (contain(Priority.class))
-            return get(Priority.class).value();
-        return 0;
+        return get(Priority.class).value().value();
     }
 }

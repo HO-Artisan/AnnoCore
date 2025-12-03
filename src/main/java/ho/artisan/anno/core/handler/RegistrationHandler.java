@@ -2,24 +2,30 @@ package ho.artisan.anno.core.handler;
 
 import ho.artisan.anno.core.Entry;
 import ho.artisan.anno.core.Registration;
+import ho.artisan.anno.util.PriorityLevel;
 import org.jetbrains.annotations.NotNull;
 
-public interface RegistrationHandler extends Comparable<RegistrationHandler> {
-    boolean match(Entry entry);
+import static ho.artisan.anno.util.PriorityLevel.LOW;
 
-    void process(Entry entry, Registration registration);
+public interface RegistrationHandler extends Comparable<RegistrationHandler> {
+    boolean shouldProcess(Entry entry);
+
+    void handle(Entry entry, Registration registration);
 
     String id();
 
-    default void before(Registration registration) {}
+    default void onBeforeRegistration(Registration registration) {}
 
-    default void after(Registration registration) {}
+    default void onAfterRegistration(Registration registration) {}
 
-    default int priority() {
-        return 0;
+    default PriorityLevel priority() {
+        return LOW;
     }
 
     default int compareTo(@NotNull RegistrationHandler resolver) {
-        return resolver.priority() - this.priority();
+        int thisValue = this.priority().value();
+        int otherValue = resolver.priority().value();
+        return Integer.compare(thisValue, otherValue);
     }
+
 }

@@ -1,18 +1,31 @@
 package ho.artisan.anno.core;
 
+import ho.artisan.anno.core.annotation.ID;
+import ho.artisan.anno.core.annotation.Priority;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class AbstractAnno implements Anno {
+import static ho.artisan.anno.util.PriorityLevel.LOW;
+
+public abstract class AbstractAnno implements Anno {
     private final Map<Class<? extends Annotation>, Annotation> map;
 
-    protected AbstractAnno(AnnotatedElement element) {
+    public AbstractAnno(AnnotatedElement element) {
         map = Arrays.stream(element.getDeclaredAnnotations()).collect(
                 Collectors.toMap(Annotation::annotationType, Function.identity(), (first, second) -> first, LinkedHashMap::new)
         );
+        init();
+    }
+
+    protected void init() {
+        if (!contain(ID.class))
+            put(FakeAnnotation.builder(ID.class).value("unnamed").build());
+        if (!contain(Priority.class))
+            put(FakeAnnotation.builder(Priority.class).value(LOW).build());
     }
 
     @Override
@@ -22,6 +35,8 @@ public class AbstractAnno implements Anno {
 
     @Override
     public <A extends Annotation> boolean contain(Class<A> aClass) {
+        if (!map.containsKey(aClass))
+            return false;
         return aClass.isInstance(map.get(aClass));
     }
 

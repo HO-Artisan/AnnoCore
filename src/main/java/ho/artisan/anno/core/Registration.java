@@ -3,10 +3,9 @@ package ho.artisan.anno.core;
 import ho.artisan.anno.util.AnnoUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 public final class Registration extends AbstractAnno {
     private final String name;
@@ -14,8 +13,9 @@ public final class Registration extends AbstractAnno {
 
     private Registration(Class<?> clazz) {
         super(clazz);
-        this.entries = Stream.of(clazz.getDeclaredFields())
-                .filter(Registration::isEligibleField)
+        this.entries = Arrays.stream(clazz.getDeclaredFields())
+                .filter(field -> Modifier.isStatic(field.getModifiers()))
+                .filter(field -> !Modifier.isPrivate(field.getModifiers()))
                 .map((Entry::wrap))
                 .sorted(AnnoUtil.comparator())
                 .toList();
@@ -26,17 +26,12 @@ public final class Registration extends AbstractAnno {
         return this.entries;
     }
 
-    public boolean is(String name) {
+    public boolean matches(String name) {
         return this.name.equals(name);
     }
 
     public static Registration wrap(@NotNull Class<?> clazz) {
         return new Registration(clazz);
-    }
-
-    public static boolean isEligibleField(Field field) {
-        int modifiers = field.getModifiers();
-        return Modifier.isStatic(modifiers) && !Modifier.isFinal(modifiers);
     }
 
     @Override
