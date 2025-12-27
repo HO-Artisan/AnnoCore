@@ -16,8 +16,15 @@ public interface Anno {
     <A extends Annotation> void remove(Class<A> aClass);
     List<? extends Annotation> annotations();
 
+    String name();
+
     default Anno wrap(AnnotatedElement element) {
-        return new AbstractAnno(element) {};
+        return new AbstractAnno(element) {
+            @Override
+            public String name() {
+                return "unknown";
+            }
+        };
     }
 
     @NotNull

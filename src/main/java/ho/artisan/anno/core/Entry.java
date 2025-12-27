@@ -32,6 +32,7 @@ public final class Entry extends AbstractAnno {
         return this.name.equals(name);
     }
 
+    @Override
     public String name() {
         return name;
     }

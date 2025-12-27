@@ -1,10 +1,11 @@
 package ho.artisan.anno.core;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,9 +34,9 @@ public final class FakeAnnotation<A> implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) {
         String methodName = method.getName();
 
-        if (methodName.equals("equals")) {
+        if (methodName.equals("equals"))
             return false;
-        }
+        
         else if (methodName.equals("toString"))
             return formatAnnotation();
 
@@ -102,17 +103,7 @@ public final class FakeAnnotation<A> implements InvocationHandler {
             this.valueMap = new HashMap<>();
         }
 
-        public Builder<A> copy(Invoker invoker) {
-            valueMap.put(invoker.name(), invoker.invoke());
-            return this;
-        }
-
-        public Builder<A> copyAll(Collection<Invoker> invokers) {
-            invokers.forEach(this::copy);
-            return this;
-        }
-
-        public <T> Builder<A> fake(String key, T value) {
+        public <T> Builder<A> fake(@NotNull String key, @NotNull T value) {
             valueMap.put(key, value);
             return this;
         }

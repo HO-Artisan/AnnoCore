@@ -1,39 +1,41 @@
 package ho.artisan.anno.core;
 
-import ho.artisan.anno.util.AnnoUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.List;
 
 public final class Instance extends AbstractAnno {
     private final String name;
     private final Object instance;
-    private final List<Property> properties;
-    private final List<Invoker> invokers;
+
+    private final AnnoList<Property> properties = new AnnoList<>();
+    private final AnnoList<Invoker> invokers = new AnnoList<>();
 
     private Instance(Object instance, Class<?> clazz) {
         super(clazz);
         this.instance = instance;
-        this.properties = Arrays.stream(clazz.getDeclaredFields())
+
+        Arrays.stream(clazz.getDeclaredFields())
                 .filter(field -> !Modifier.isStatic(field.getModifiers()))
                 .map(field -> Property.wrap(instance, field))
-                .sorted(AnnoUtil.comparator())
-                .toList();
-        this.invokers = Arrays.stream(clazz.getDeclaredMethods())
+                .forEach(properties::add);
+        properties.sortedByPriority();
+
+        Arrays.stream(clazz.getDeclaredMethods())
                 .filter(method -> !Modifier.isStatic(method.getModifiers()))
                 .map(method -> Invoker.wrap(instance, method))
-                .sorted(AnnoUtil.comparator())
-                .toList();
+                .forEach(invokers::add);
+        invokers.sortedByPriority();
+
         this.name = clazz.getName();
     }
 
-    public List<Property> properties() {
+    public AnnoList<Property> properties() {
         return this.properties;
     }
 
-    public List<Invoker> invokers() {
+    public AnnoList<Invoker> invokers() {
         return this.invokers;
     }
 
@@ -53,6 +55,7 @@ public final class Instance extends AbstractAnno {
         return this.name.equals(name);
     }
 
+    @Override
     public String name() {
         return name;
     }

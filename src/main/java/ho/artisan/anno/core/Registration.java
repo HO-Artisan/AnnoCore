@@ -1,28 +1,32 @@
 package ho.artisan.anno.core;
 
-import ho.artisan.anno.util.AnnoUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.List;
 
 public final class Registration extends AbstractAnno {
     private final String name;
-    private final List<Entry> entries;
+    private final AnnoList<Entry> entries = new AnnoList<>();
 
     private Registration(Class<?> clazz) {
         super(clazz);
-        this.entries = Arrays.stream(clazz.getDeclaredFields())
+        Arrays.stream(clazz.getDeclaredFields())
                 .filter(field -> Modifier.isStatic(field.getModifiers()))
                 .filter(field -> !Modifier.isPrivate(field.getModifiers()))
                 .map((Entry::wrap))
-                .sorted(AnnoUtil.comparator())
-                .toList();
+                .forEach(entries::add);
+        entries.sortedByPriority();
+
         this.name = clazz.getName();
     }
 
-    public List<Entry> entries() {
+    @Override
+    public String name() {
+        return name;
+    }
+
+    public AnnoList<Entry> entries() {
         return this.entries;
     }
 

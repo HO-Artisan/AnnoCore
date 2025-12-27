@@ -1,12 +1,12 @@
 import ho.artisan.anno.core.Entry;
-import ho.artisan.anno.core.FakeAnnotation;
+import ho.artisan.anno.core.Instance;
 
 public class Main {
 
     @Nio(4)
     public static final Entity ENTITY_0 = new Entity(101);
 
-    @Nio(1)
+    @Nio(6)
     @Mio({
             @Nio(1),
             @Nio(2)
@@ -19,16 +19,13 @@ public class Main {
         Nio nio = entity.get(Nio.class);
         Mio mio = entity.get(Mio.class);
 
-        Nio fake1 = FakeAnnotation.builder(Nio.class).fake("value", 1).build();
-        Nio fake2 = FakeAnnotation.builder(Nio.class).value(2).build();
+        Instance instance = Instance.wrap(ENTITY_0, Entity.class);
 
-        Mio fake3 = FakeAnnotation.builder(Mio.class).value(new Nio[]{fake1, fake2}).build();
-
-        print(mio);
-        print(fake3);
-
-        print(fake3.equals(mio));
-        print(mio.equals(fake3));
+        print(instance.invokers());
+        print("-----------------");
+        print(instance.invokers().findByName("getI").invoke());
+        instance.invokers().findByName("setI").invoke(new Object[]{114});
+        print(instance.invokers().findByName("getI").invoke());
     }
 
     public static <T> void print(T object) {

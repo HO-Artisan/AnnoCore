@@ -16,7 +16,7 @@ public final class Invoker extends AbstractAnno {
 
         this.function = (objects -> {
             try {
-                return method.invoke(objects, objects);
+                return method.invoke(instance, objects);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
@@ -36,11 +36,20 @@ public final class Invoker extends AbstractAnno {
         return this.name.equals(name);
     }
 
+    @NotNull
     public String name() {
         return name;
     }
 
     public static  Invoker wrap(@NotNull Object instance, @NotNull Method method) {
         return new Invoker(instance, method);
+    }
+
+    @Override
+    public String toString() {
+        return "Invoker{" +
+                "name='" + name + '\'' +
+                ", function=" + function +
+                '}';
     }
 }
