@@ -23,9 +23,9 @@ public class Main {
 
         print(instance.invokers());
         print("-----------------");
-        print(instance.invokers().findByName("getI").invoke());
+        print(instance.invokers().findByName("toString").invoke());
         instance.invokers().findByName("setI").invoke(new Object[]{114});
-        print(instance.invokers().findByName("getI").invoke());
+        print(instance.invokers().findByName("toString").invoke());
     }
 
     public static <T> void print(T object) {
