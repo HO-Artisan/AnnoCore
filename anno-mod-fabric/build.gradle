@@ -1,0 +1,50 @@
+plugins {
+    id 'fabric-loom' version '1.10.5'
+    id 'maven-publish'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:1.21.1"
+    mappings "net.fabricmc:yarn:1.21.1+build.3:v2"
+
+    // compileOnly, not implementation: this module is a library, not a runnable mod, and any
+    // consumer already declares loader/API itself. Leaking them into the POM would hand
+    // consumers un-remapped mod jars on their runtime classpath.
+    modCompileOnly "net.fabricmc:fabric-loader:0.16.9"
+    modCompileOnly "net.fabricmc.fabric-api:fabric-api:0.102.1+1.21.1"
+
+    api project(':anno-core')
+    api project(':anno-mod-common')
+}
+
+java {
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = 'KessokuMaven'
+            url = version.toString().endsWith('-SNAPSHOT')
+                    ? 'https://maven.kessokuteatime.work/snapshots'
+                    : 'https://maven.kessokuteatime.work/releases'
+            credentials {
+                username = System.getenv('K_MAVEN_USERNAME')
+                password = System.getenv('K_MAVEN_TOKEN')
+            }
+        }
+    }
+}

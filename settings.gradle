@@ -1,2 +1,19 @@
+pluginManagement {
+    repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        gradlePluginPortal()
+    }
+}
+
 rootProject.name = 'AnnoCore'
+
+include 'anno-core'
+include 'anno-mod-common'
+include 'anno-mod-neoforge'
+include 'anno-mod-fabric'
+include 'anno-mod-architectury-fabric'
+include 'anno-mod-architectury-neoforge'
 

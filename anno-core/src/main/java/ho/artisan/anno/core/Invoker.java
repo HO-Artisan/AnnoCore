@@ -1,0 +1,60 @@
+package ho.artisan.anno.core;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.function.Function;
+
+public final class Invoker extends AbstractAnno {
+    private final String name;
+    private final Function<Object[], Object> function;
+
+    private Invoker(Object instance, Method method) {
+        super(method);
+        method.setAccessible(true);
+
+        this.function = (objects -> {
+            try {
+                return method.invoke(instance, objects);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        this.name = method.getName();
+    }
+
+    public Object invoke(@NotNull Object[] args) {
+        return function.apply(args);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <R> R invoke(Class<R> returnType, Object... args) {
+        return returnType.cast(function.apply(args));
+    }
+
+    public Object invoke() {
+        return function.apply(null);
+    }
+
+    public boolean matches(String name) {
+        return this.name.equals(name);
+    }
+
+    @NotNull
+    public String name() {
+        return name;
+    }
+
+    public static  Invoker wrap(@NotNull Object instance, @NotNull Method method) {
+        return new Invoker(instance, method);
+    }
+
+    @Override
+    public String toString() {
+        return "Invoker{" +
+                "name='" + name + '\'' +
+                ", function=" + function +
+                '}';
+    }
+}

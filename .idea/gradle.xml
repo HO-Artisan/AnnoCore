@@ -11,8 +11,15 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/anno-core" />
+            <option value="$PROJECT_DIR$/anno-mod-architectury-fabric" />
+            <option value="$PROJECT_DIR$/anno-mod-architectury-neoforge" />
+            <option value="$PROJECT_DIR$/anno-mod-common" />
+            <option value="$PROJECT_DIR$/anno-mod-fabric" />
+            <option value="$PROJECT_DIR$/anno-mod-neoforge" />
           </set>
         </option>
+        <option name="resolveExternalAnnotations" value="true" />
       </GradleProjectSettings>
     </option>
   </component>

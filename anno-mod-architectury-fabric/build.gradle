@@ -1,0 +1,57 @@
+plugins {
+    id 'fabric-loom' version '1.10.5'
+    id 'maven-publish'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'Architectury'
+        url = 'https://maven.architectury.dev/'
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:1.21.1"
+    mappings "net.fabricmc:yarn:1.21.1+build.3:v2"
+
+    // compileOnly throughout: this is an optional add-on library, not a runnable mod. Consumers
+    // bring their own loader, Architectury API and fabric-api versions.
+    modCompileOnly "net.fabricmc:fabric-loader:0.16.9"
+    // transitive = false: Architectury pins its own fabric-api build, which would otherwise
+    // fight the consumer's (and force an unrelated download here).
+    modCompileOnly("dev.architectury:architectury-fabric:${project.architectury_version}") {
+        transitive = false
+    }
+
+    api project(':anno-core')
+    api project(':anno-mod-common')
+}
+
+java {
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = 'KessokuMaven'
+            url = version.toString().endsWith('-SNAPSHOT')
+                    ? 'https://maven.kessokuteatime.work/snapshots'
+                    : 'https://maven.kessokuteatime.work/releases'
+            credentials {
+                username = System.getenv('K_MAVEN_USERNAME')
+                password = System.getenv('K_MAVEN_TOKEN')
+            }
+        }
+    }
+}

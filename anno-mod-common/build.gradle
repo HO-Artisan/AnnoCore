@@ -1,0 +1,53 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api project(':anno-core')
+    compileOnly 'org.jetbrains:annotations:24.0.1'
+    testCompileOnly 'org.jetbrains:annotations:24.0.1'
+
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+java {
+    withSourcesJar()
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = 'KessokuMaven'
+            url = version.toString().endsWith('-SNAPSHOT')
+                    ? 'https://maven.kessokuteatime.work/snapshots'
+                    : 'https://maven.kessokuteatime.work/releases'
+            credentials {
+                username = System.getenv('K_MAVEN_USERNAME')
+                password = System.getenv('K_MAVEN_TOKEN')
+            }
+        }
+    }
+}
